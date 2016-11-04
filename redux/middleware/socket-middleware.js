@@ -11,6 +11,8 @@ const socketMiddleware = (function(){
 
     //Tell the store we're connected
     store.dispatch(connected());
+
+
     window.register = () => { store.dispatch(register()) };
   }
 
@@ -24,6 +26,13 @@ const socketMiddleware = (function(){
 
     var msg = ircparse(evt.data);
     console.log('irc message:', msg);
+    if (msg.command === "NOTICE") {
+      console.log('trying to register');
+      let nickname = 'fuzzy';
+      ws.send('NICK ' + nickname + '\n');
+      ws.send('USER ' + nickname + ' * 0 :' + nickname + '\n');
+    }
+    store.dispatch({type: msg.params[0], raw: msg.raw});
     /*
     switch(msg.type) {
       case "CHAT_MESSAGE":
@@ -71,8 +80,9 @@ const socketMiddleware = (function(){
         break;
 
       //Send the 'SEND_MESSAGE' action down the websocket to the server
-      case 'SEND_CHAT_MESSAGE':
-        socket.send(JSON.stringify(action));
+      case 'SEND_IRC_COMMAND':
+        console.log('SEND', action.irc);
+        socket.send(action.irc + '\n');
         break;
 
       case 'REGISTER':
