@@ -39,6 +39,7 @@ render(
 //store.subscribe(() => console.log(store.getState().elapsed));
 
 store.dispatch({ type: 'CONNECT', url: 'ws://163.172.153.75:8080' });
+window.store = store;
 
 /*
 
